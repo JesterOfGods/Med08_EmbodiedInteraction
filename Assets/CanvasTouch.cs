@@ -5,16 +5,15 @@ using UnityEngine;
 public class CanvasTouch : MonoBehaviour
 {
     public GameObject brush;
-    public float ZfightingFix = 0.1f;
+    public float ZfightingFix = 0.01f;
     //public GameObject canvas;
     public float size = 0.005f;
     private bool touchingCanvas;
     private GameObject finger;
-    // Start is called before the first frame update
-    void Start()
-    {
 
-    }
+    public Material lineMat;
+    private LineRenderer currLine = null;
+    private bool lineStartUpdated = false;
 
     // Update is called once per frame
     void Update()
@@ -23,9 +22,24 @@ public class CanvasTouch : MonoBehaviour
         {
             if (touchingCanvas)
             {
-                var go = Instantiate(brush, finger.transform.position + this.transform.forward * -1 * ZfightingFix, Quaternion.FromToRotation(Vector3.up, this.transform.forward * -1), this.transform);
-                go.transform.localScale = Vector3.one * size;
-            }
+                Vector3 fingerPos = finger.transform.position + this.transform.forward * -1 * ZfightingFix;
+
+                if (currLine)
+                {
+
+                    //Updates the line start position to not be directly at (0,0,0) but a the first fingertip position.
+                    if (!lineStartUpdated)
+                    {
+                        currLine.SetPosition(0, fingerPos);
+                        currLine.SetPosition(1, fingerPos);
+                        lineStartUpdated = true;
+                        return;
+                    }
+                    currLine.positionCount++;
+                    currLine.SetPosition(currLine.positionCount - 1, fingerPos);
+                }
+
+            }   
         }
     }
 
@@ -35,11 +49,19 @@ public class CanvasTouch : MonoBehaviour
         if (finger == null)
         {
             finger = other.transform.gameObject;
+
+            GameObject newLineObject = new GameObject();
+            newLineObject.transform.parent = this.gameObject.transform;
+            currLine = newLineObject.gameObject.AddComponent<LineRenderer>();
+            currLine.startWidth = 0.01f;
+            currLine.endWidth = 0.01f;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
         touchingCanvas = false;
+        currLine = null;
+        lineStartUpdated = false;
     }
 }
