@@ -13,7 +13,6 @@ public class CanvasTouch : MonoBehaviour
 
     public Material lineMat;
     private LineRenderer currLine = null;
-    private bool lineStartUpdated = false;
 
     // Update is called once per frame
     void Update()
@@ -26,15 +25,6 @@ public class CanvasTouch : MonoBehaviour
 
                 if (currLine)
                 {
-
-                    //Updates the line start position to not be directly at (0,0,0) but a the first fingertip position.
-                    if (!lineStartUpdated)
-                    {
-                        currLine.SetPosition(0, fingerPos);
-                        currLine.SetPosition(1, fingerPos);
-                        lineStartUpdated = true;
-                        return;
-                    }
                     currLine.positionCount++;
                     currLine.SetPosition(currLine.positionCount - 1, fingerPos);
                 }
@@ -55,6 +45,11 @@ public class CanvasTouch : MonoBehaviour
             currLine = newLineObject.gameObject.AddComponent<LineRenderer>();
             currLine.startWidth = 0.01f;
             currLine.endWidth = 0.01f;
+
+            //Updates the line start position to not be directly at (0,0,0) but a the first fingertip position.
+            currLine.SetPosition(0, finger.transform.position);
+            currLine.SetPosition(1, finger.transform.position);
+            return;
         }
     }
 
@@ -62,6 +57,5 @@ public class CanvasTouch : MonoBehaviour
     {
         touchingCanvas = false;
         currLine = null;
-        lineStartUpdated = false;
     }
 }
