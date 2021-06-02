@@ -22,14 +22,27 @@ public class CanvasTouch : MonoBehaviour
             if (touchingCanvas)
             {
                 Vector3 fingerPos = finger.transform.position + this.transform.forward * -1 * ZfightingFix;
-
                 if (currLine)
                 {
                     currLine.positionCount++;
-                    currLine.SetPosition(currLine.positionCount - 1, fingerPos);
+                    currLine.SetPosition(currLine.positionCount - 1, fingerPos);                   
+                }
+                 if (Vector3.Distance(currLine.GetPosition(currLine.positionCount - 2), fingerPos) > 0.001f)
+                {
+
+                    GetComponent<AudioSource>().UnPause();
+                }
+                else
+                {
+
+                     GetComponent<AudioSource>().Pause();
                 }
 
-            }   
+            }
+            else
+            {
+                GetComponent<AudioSource>().Stop();
+            }
         }
     }
 
@@ -39,7 +52,8 @@ public class CanvasTouch : MonoBehaviour
         if (finger == null)
         {
             finger = other.transform.gameObject;
-
+        }
+            GetComponent<AudioSource>().Play();
             GameObject newLineObject = new GameObject();
             newLineObject.transform.parent = this.gameObject.transform;
             currLine = newLineObject.gameObject.AddComponent<LineRenderer>();
@@ -50,7 +64,7 @@ public class CanvasTouch : MonoBehaviour
             currLine.SetPosition(0, finger.transform.position);
             currLine.SetPosition(1, finger.transform.position);
             return;
-        }
+        
     }
 
     private void OnTriggerExit(Collider other)
