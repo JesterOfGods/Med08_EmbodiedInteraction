@@ -27,21 +27,12 @@ public class CanvasTouch : MonoBehaviour
                     currLine.positionCount++;
                     currLine.SetPosition(currLine.positionCount - 1, fingerPos);                   
                 }
-                 if (Vector3.Distance(currLine.GetPosition(currLine.positionCount - 2), fingerPos) > 0.001f)
-                {
-
+                
+                if (Vector3.Distance(currLine.GetPosition(currLine.positionCount - 2), fingerPos) > 0.001f)
                     GetComponent<AudioSource>().UnPause();
-                }
                 else
-                {
+                    GetComponent<AudioSource>().Pause();
 
-                     GetComponent<AudioSource>().Pause();
-                }
-
-            }
-            else
-            {
-                GetComponent<AudioSource>().Stop();
             }
         }
     }
@@ -71,5 +62,6 @@ public class CanvasTouch : MonoBehaviour
     {
         touchingCanvas = false;
         currLine = null;
+        GetComponent<AudioSource>().Stop();
     }
 }
